@@ -54,7 +54,7 @@ Run the configurator:
 .\scripts\Configure-Apollo.ps1 `
   -BaseUrl "https://127.0.0.1:47990" `
   -Username "apollo-user" `
-  -Password "apollo-password" `
+  -Password "<apollo-web-ui-password>" `
   -ClientNames "Phone","Tablet" `
   -TrustCertificate
 ```
@@ -121,4 +121,3 @@ Expose Apollo's Web UI only on trusted networks.
 ## License
 
 MIT
-
