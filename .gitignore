@@ -1,0 +1,21 @@
+# Local secrets and machine-specific notes
+*-credentials.txt
+*.secret
+*.local
+*.secret.json
+*.local.json
+.env
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+
+# Generated logs and temporary output
+*.log
+*.tmp
+out/
+tmp/
+
+# Keep this repo focused on reusable tools. Local streaming/game-launch helpers
+# can be copied into scripts later after they are scrubbed and parameterized.
+launch-steam-on-stream-display.ps1

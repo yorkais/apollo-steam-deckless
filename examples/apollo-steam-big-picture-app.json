@@ -1,0 +1,19 @@
+{
+  "name": "Steam Big Picture",
+  "image-path": "steam.png",
+  "virtual-display": true,
+  "auto-detach": true,
+  "wait-all": false,
+  "exit-timeout": 5,
+  "detached": [
+    "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"C:\\Program Files\\Apollo\\scripts\\Launch-GameStreamApp.ps1\""
+  ],
+  "prep-cmd": [
+    {
+      "do": "",
+      "elevated": false,
+      "undo": "steam://close/bigpicture"
+    }
+  ]
+}
+

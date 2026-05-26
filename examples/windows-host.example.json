@@ -1,0 +1,10 @@
+{
+  "sshAlias": "win",
+  "windowsUser": "WindowsUser",
+  "hostName": "192.0.2.10",
+  "hostIPv6": "2001:db8::10",
+  "identityFile": "~/.ssh/windows_host_ed25519",
+  "allowedIPv4CIDR": "192.0.2.0/24",
+  "allowedIPv6CIDR": "2001:db8::/64",
+  "steamPath": "D:\\App\\Steam\\steam.exe"
+}
