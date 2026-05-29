@@ -1,18 +1,29 @@
-# Apollo Steam Deckless
+# Steam Deckless Streaming Toolkit
 
-Run Steam Big Picture from a Windows PC on a phone or tablet through Apollo and Moonlight, without manually changing monitors every time.
+Run Steam from a Windows or Linux host on a phone or tablet through
+Moonlight-compatible streaming, without turning the host into a dedicated game
+console.
 
-This project solves one focused problem:
+This project covers two related host setups:
 
-> A Windows gaming PC has a physical monitor, but a Moonlight client should get its own correctly sized virtual display, and Steam Big Picture should open on that streamed display.
+- **Windows + Apollo:** give Moonlight clients their own Apollo virtual display,
+  then launch Steam Big Picture on that streamed display.
+- **Linux + Sunshine:** run Sunshine from one isolated directory on an existing
+  Linux workstation or server, keeping research or work environments separate
+  from game-streaming state.
 
 It is useful for:
 
-- Playing Steam games from a phone or tablet on the same LAN.
-- Reusing the same Apollo setup on another Windows PC.
-- Running a Windows gaming host where the physical monitor is not the streaming target.
+- Playing Steam games from a phone or tablet.
+- Reusing the same streaming setup on another host.
+- Keeping the physical monitor separate from the streamed display on Windows.
+- Adding Sunshine to a Linux machine without replacing the base OS.
 
-## What It Configures
+## Windows Apollo Host
+
+Use this when the host is Windows and Apollo is installed.
+
+### What It Configures
 
 - Enables Apollo virtual-display mode.
 - Makes the streamed virtual display the primary display during a session.
@@ -20,7 +31,7 @@ It is useful for:
 - Grants paired clients the permission needed to launch apps.
 - Replaces Apollo's Steam Big Picture entry with a launcher that starts Steam and moves Steam windows to the streamed display.
 
-## Requirements
+### Requirements
 
 - Windows 10/11 host.
 - Apollo installed and reachable through its Web UI.
@@ -28,7 +39,7 @@ It is useful for:
 - Moonlight-compatible client.
 - PowerShell 5.1 or later.
 
-## Files
+### Files
 
 ```text
 scripts/
@@ -37,13 +48,16 @@ scripts/
                              Configure Wake-on-LAN and sleep behavior for streaming.
   Launch-GameStreamApp.ps1  Start Steam Big Picture and move Steam windows to the stream display.
   Send-WakePacket.ps1       Send a Wake-on-LAN magic packet from PowerShell.
+  setup-linux-sunshine-appimage.sh
+                             Create an isolated Sunshine AppImage runtime on Linux.
 
 examples/
   apollo-steam-big-picture-app.json  Example Apollo app entry.
   windows-host.example.json          Placeholder host config shape.
+  linux-host.example.env             Placeholder Linux host config shape.
 ```
 
-## Quick Start
+### Quick Start
 
 Copy the launcher into Apollo's scripts directory on the Windows host:
 
@@ -63,6 +77,42 @@ Run the configurator:
 ```
 
 Pair clients in Moonlight or another compatible client first, then rerun the same command with their Apollo client names.
+
+## Linux Sunshine Host
+
+Use this when the host is Linux and the base system must stay intact.
+
+This path does **not** install Sunshine as a system package. It creates an
+isolated AppImage runtime under one directory, redirects Sunshine state through
+`HOME` and XDG environment variables, and leaves the host OS and research
+directories alone.
+
+```bash
+./scripts/setup-linux-sunshine-appimage.sh \
+  --base-dir "$HOME/game-stream" \
+  --display :0
+```
+
+Set Sunshine Web UI credentials:
+
+```bash
+$HOME/game-stream/bin/sunshine-set-creds stream-admin '<new-password>'
+```
+
+Start and inspect Sunshine:
+
+```bash
+$HOME/game-stream/bin/start-sunshine
+$HOME/game-stream/bin/status-game-stream
+```
+
+Enable Moonlight keyboard, mouse, and gamepad input once:
+
+```bash
+sudo "$HOME/game-stream/bin/fix-sunshine-input-permissions.sh" "$USER"
+```
+
+For details, see [Linux Sunshine Host](docs/linux-sunshine-host.md).
 
 ## Optional Sleep And Wake Setup
 
