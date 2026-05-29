@@ -33,7 +33,10 @@ It is useful for:
 ```text
 scripts/
   Configure-Apollo.ps1      Configure Apollo API settings, app entry, and client permissions.
+  Configure-WakeForStreaming.ps1
+                             Configure Wake-on-LAN and sleep behavior for streaming.
   Launch-GameStreamApp.ps1  Start Steam Big Picture and move Steam windows to the stream display.
+  Send-WakePacket.ps1       Send a Wake-on-LAN magic packet from PowerShell.
 
 examples/
   apollo-steam-big-picture-app.json  Example Apollo app entry.
@@ -60,6 +63,47 @@ Run the configurator:
 ```
 
 Pair clients in Moonlight or another compatible client first, then rerun the same command with their Apollo client names.
+
+## Optional Sleep And Wake Setup
+
+For a couch or mobile workflow, the host can sleep most of the time and wake when Moonlight sends a Wake-on-LAN packet.
+
+Run PowerShell as administrator on the Windows host:
+
+```powershell
+.\scripts\Configure-WakeForStreaming.ps1 `
+  -AdapterDescriptionPattern "Wi-Fi|Wireless|Ethernet|Intel|Realtek" `
+  -SleepAfterMinutesOnAc 30 `
+  -DisplayOffMinutesOnAc 10 `
+  -DisableHybridSleep `
+  -DisablePatternWake
+```
+
+If a known background remote-control helper prevents sleep, add a request override only after reviewing `powercfg /requests`:
+
+```powershell
+.\scripts\Configure-WakeForStreaming.ps1 `
+  -PowerRequestOverrideProcessNames "RemoteControlHelper.exe"
+```
+
+To allow a sleeping-but-unlocked desktop to resume directly into Steam, you may also use:
+
+```powershell
+.\scripts\Configure-WakeForStreaming.ps1 `
+  -DisableWakePassword
+```
+
+This is a security tradeoff. It does not unlock an already locked Windows session and it does not remove the account password. It only asks Windows not to require a new sign-in after waking from sleep. For this workflow, unlock the host locally once, leave Steam or Big Picture ready, then let the host sleep.
+
+To test Wake-on-LAN from another PowerShell machine:
+
+```powershell
+.\scripts\Send-WakePacket.ps1 `
+  -MacAddress "00-11-22-33-44-55" `
+  -Targets "192.0.2.255","255.255.255.255"
+```
+
+Moonlight clients can also send Wake-on-LAN. If a phone or tablet cannot wake the host but another machine on the same network can, the Wi-Fi or LAN may be blocking client broadcast packets. In that case, use a small always-on machine on the same LAN as a wake relay.
 
 ## Apollo Settings Applied
 
@@ -104,6 +148,36 @@ Steam probably opened on the physical monitor. Confirm `dd_configuration_option 
 Wrong aspect ratio
 
 Change the client resolution first. If needed, set a per-client `display_mode` in Apollo.
+
+Host wakes into the Windows lock screen
+
+Wake-on-LAN can wake the host, but it cannot unlock Windows. If the session was locked before sleep, it will still be locked after wake. Unlock the host locally once, leave the desktop session active, and let it sleep without pressing `Win+L`.
+
+Host does not sleep
+
+Run:
+
+```powershell
+powercfg /requests
+```
+
+Streaming, audio, remote-control, update, or browser helper processes can block sleep. Review the output before adding any `powercfg /requestsoverride` rule.
+
+Host does not wake from Moonlight
+
+Confirm the network adapter is armed:
+
+```powershell
+powercfg /devicequery wake_armed
+```
+
+Then test the wake packet from another machine:
+
+```powershell
+.\scripts\Send-WakePacket.ps1 -MacAddress "00-11-22-33-44-55"
+```
+
+If direct broadcast fails on a managed Wi-Fi network, use a wake relay on the same LAN or connect the Windows host by Ethernet.
 
 Logs:
 

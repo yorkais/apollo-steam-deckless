@@ -6,5 +6,16 @@
   "identityFile": "~/.ssh/windows_host_ed25519",
   "allowedIPv4CIDR": "192.0.2.0/24",
   "allowedIPv6CIDR": "2001:db8::/64",
-  "steamPath": "D:\\App\\Steam\\steam.exe"
+  "steamPath": "D:\\App\\Steam\\steam.exe",
+  "wake": {
+    "adapterName": "Wi-Fi",
+    "macAddress": "00-11-22-33-44-55",
+    "broadcastTargets": [
+      "192.0.2.255",
+      "255.255.255.255"
+    ],
+    "sleepAfterMinutesOnAc": 30,
+    "displayOffMinutesOnAc": 10,
+    "disableWakePassword": false
+  }
 }
